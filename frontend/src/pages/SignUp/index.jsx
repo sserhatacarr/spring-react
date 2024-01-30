@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 export function SignUp() {
@@ -6,8 +7,17 @@ export function SignUp() {
   const [password, setpassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
 
+  const onSubmit = (event) => {
+    event.preventDefault();
+    axios.post("api/v1/users", {
+      username,
+      email,
+      password,
+    });
+  };
+
   return (
-    <>
+    <form onSubmit={onSubmit}>
       <h1>Sign Up</h1>
       <div>
         <label htmlFor="username"> Username</label>
@@ -36,9 +46,12 @@ export function SignUp() {
           onChange={(event) => setPasswordRepeat(event.target.value)}
         />
       </div>
-      <button disabled={!password || password !== passwordRepeat}>
+      <button
+        disabled={!password || password !== passwordRepeat}
+        onClick={onSubmit}
+      >
         Sign Up
       </button>
-    </>
+    </form>
   );
 }
