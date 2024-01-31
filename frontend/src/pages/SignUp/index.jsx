@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import { signUp } from "./api";
 
@@ -16,11 +15,17 @@ export function SignUp() {
     setApiProgress(true);
 
     try {
-      const response = signUp({
+      const response = await signUp({
         username,
         email,
         password,
-      });
+      })
+        .then((response) => {
+          setSuccesMessage(response.data.message);
+        })
+        .finally(() => {
+          setApiProgress(false);
+        });
 
       setSuccesMessage(response.data.message);
     } catch {
