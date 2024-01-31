@@ -1,57 +1,116 @@
 import axios from "axios";
 import { useState } from "react";
+import { signUp } from "./api";
 
 export function SignUp() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
+  const [apiProgress, setApiProgress] = useState(false);
+  const [succesMessage, setSuccesMessage] = useState();
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    axios.post("api/v1/users", {
-      username,
-      email,
-      password,
-    });
+    setSuccesMessage();
+    setApiProgress(true);
+
+    try {
+      const response = signUp({
+        username,
+        email,
+        password,
+      });
+
+      setSuccesMessage(response.data.message);
+    } catch {
+    } finally {
+    }
+
+    // .then((response) => {
+    //   setSuccesMessage(response.data.message);
+    // })
+    // .finally(() => {
+    //   setApiProgress(false);
+    // });
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <h1>Sign Up</h1>
-      <div>
-        <label htmlFor="username"> Username</label>
-        <input
-          id="username"
-          onChange={(event) => setUsername(event.target.value)}
-        />
+    <div className="container">
+      <div className="col-lg-6 offset-lg-3 col-sm-8 offset-sm-2">
+        <form className="card" onSubmit={onSubmit}>
+          <div className="text-center card-header">
+            <h1>Sign Up</h1>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label htmlFor="username" className="form-label">
+                {" "}
+                Username
+              </label>
+              <input
+                id="username"
+                className="form-control"
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                {" "}
+                E-mail
+              </label>
+              <input
+                id="email"
+                className="form-control"
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                {" "}
+                Password
+              </label>
+              <input
+                id="password"
+                className="form-control"
+                type="password"
+                onChange={(event) => setpassword(event.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="passwordRepeat" className="form-label">
+                {" "}
+                Password Repeat
+              </label>
+              <input
+                id="passwordRepeat"
+                className="form-control"
+                type="password"
+                onChange={(event) => setPasswordRepeat(event.target.value)}
+              />
+            </div>
+            <div className="text-center">
+              {succesMessage && (
+                <div className="alert alert-success">{succesMessage}</div>
+              )}
+              <button
+                className="btn btn-primary"
+                disabled={
+                  apiProgress || !password || password !== passwordRepeat
+                }
+              >
+                {apiProgress && (
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    aria-hidden="true"
+                  ></span>
+                )}
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div>
-        <label htmlFor="email"> E-mail</label>
-        <input id="email" onChange={(event) => setEmail(event.target.value)} />
-      </div>
-      <div>
-        <label htmlFor="password"> Password</label>
-        <input
-          id="password"
-          type="password"
-          onChange={(event) => setpassword(event.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="passwordRepeat"> Password Repeat</label>
-        <input
-          id="passwordRepeat"
-          type="password"
-          onChange={(event) => setPasswordRepeat(event.target.value)}
-        />
-      </div>
-      <button
-        disabled={!password || password !== passwordRepeat}
-        onClick={onSubmit}
-      >
-        Sign Up
-      </button>
-    </form>
+    </div>
   );
 }
