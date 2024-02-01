@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signUp } from "./api";
 
 export function SignUp() {
@@ -8,6 +8,11 @@ export function SignUp() {
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [apiProgress, setApiProgress] = useState(false);
   const [succesMessage, setSuccesMessage] = useState();
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setErrors({});
+  }, [username, email, password, passwordRepeat]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -27,8 +32,14 @@ export function SignUp() {
           setApiProgress(false);
         });
 
-      setSuccesMessage(response.data.message);
-    } catch {
+      // setSuccesMessage(response.data.message);
+    } catch (axiosError) {
+      if (
+        axiosError.response.data?.validationErrors &&
+        axiosError.response.data.status === 400
+      ) {
+        setErrors(axiosError.response.data.validationErrors);
+      }
     } finally {
     }
 
@@ -55,9 +66,12 @@ export function SignUp() {
               </label>
               <input
                 id="username"
-                className="form-control"
+                className={
+                  errors.username ? "form-control is-invalid" : "form-control"
+                }
                 onChange={(event) => setUsername(event.target.value)}
               />
+              <div className="invalid-feedback">{errors.username}</div>
             </div>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
